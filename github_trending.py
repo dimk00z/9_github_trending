@@ -2,30 +2,25 @@ import requests
 import json
 from datetime import datetime, timedelta
 
+GITHUB_API_LINK = "https://api.github.com/search/repositories"
+
 
 def get_last_week_day():
     return(datetime.today().date() - timedelta(days=7))
 
 
-def get_trending_repositories(date, top_size=20):
-    api_link = "https://api.github.com/search/repositories"
-    get_params = {'q': 'created:>={0}'.format(date), 'sort': 'stars'}
-    request_from_git = requests.get(api_link, params=get_params)
-    json_from_request = json.loads(request_from_git.text)
-    return json_from_request['items'][:top_size]
-
-
-def get_repository_info(repository):
-    return repository['html_url'], \
-        repository['full_name'], repository['open_issues_count']
+def get_trending_repositories(first_date):
+    get_params = {'q': 'created:>={0}'.format(first_date), 'sort': 'stars'}
+    response_from_git = requests.get(GITHUB_API_LINK, params=get_params)
+    json_from_response = json.loads(response_from_git.text)
+    return json_from_response['items'][:20]
 
 
 def print_trending_repositories(repositories):
     for repository in repositories:
-        repository_info = get_repository_info(repository)
-        print('{} {} open issues: {}'.format(repository_info[0],
-                                             repository_info[1],
-                                             repository_info[2]))
+        print('{} {} open issues: {}'.format(repository['html_url'],
+                                             repository['full_name'],
+                                             repository['open_issues_count']))
 
 
 if __name__ == '__main__':
