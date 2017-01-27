@@ -12,8 +12,7 @@ def get_last_week_day():
 def get_trending_repositories(first_date):
     get_params = {'q': 'created:>={0}'.format(first_date), 'sort': 'stars'}
     response_from_git = requests.get(GITHUB_API_LINK, params=get_params)
-    json_from_response = json.loads(response_from_git.text)
-    return json_from_response['items'][:20]
+    return json.loads(response_from_git.text)['items'][:20]
 
 
 def print_trending_repositories(repositories):
