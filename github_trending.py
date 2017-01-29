@@ -2,17 +2,19 @@ import requests
 import json
 from datetime import datetime, timedelta
 
-GITHUB_API_LINK = "https://api.github.com/search/repositories"
+
+def get_first_day(number_of_days_ago=7):
+    return(datetime.today().date() - timedelta(number_of_days_ago))
 
 
-def get_last_week_day():
-    return(datetime.today().date() - timedelta(days=7))
-
-
-def get_trending_repositories(first_date):
-    get_params = {'q': 'created:>={0}'.format(first_date), 'sort': 'stars'}
-    response_from_git = requests.get(GITHUB_API_LINK, params=get_params)
-    return json.loads(response_from_git.text)['items'][:20]
+def get_trending_repositories(first_date,
+                              count_repositories_for_request=20):
+    github_api_link = "https://api.github.com/search/repositories?"
+    get_params = {'q': 'created:>={0}'.format(first_date),
+                  'sort': 'stars',
+                  'per_page': count_repositories_for_request}
+    response_from_github = requests.get(github_api_link, params=get_params)
+    return json.loads(response_from_github.text)['items']
 
 
 def print_trending_repositories(repositories):
@@ -23,6 +25,5 @@ def print_trending_repositories(repositories):
 
 
 if __name__ == '__main__':
-    last_week_date = get_last_week_day()
-    trending_repositories = get_trending_repositories(last_week_date)
+    trending_repositories = get_trending_repositories(get_first_day())
     print_trending_repositories(trending_repositories)
